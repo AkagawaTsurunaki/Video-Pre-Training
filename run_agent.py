@@ -19,7 +19,7 @@ def main(model, weights):
     obs = env.reset()
 
     while True:
-        minerl_action = agent.get_action(obs)
+        minerl_action: dict = agent.get_action(obs)
         obs, reward, done, info = env.step(minerl_action)
         env.render()
 

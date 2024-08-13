@@ -195,6 +195,11 @@ class MineRLAgent:
         call `reset()`.
         """
         agent_input = self._env_obs_to_agent(minerl_obs)
+        # @AkagawaTsurunaki
+        # This is the screenshot from observation
+        # The tensor must have shape [1, 128, 128, 3]
+        # assert agent_input['img'].shape == th.Size([1, 128, 128, 3])
+        
         # The "first" argument could be used to reset tell episode
         # boundaries, but we are only using this for predicting (for now),
         # so we do not hassle with it yet.

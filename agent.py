@@ -207,5 +207,17 @@ class MineRLAgent:
             agent_input, self._dummy_first, self.hidden_state,
             stochastic=True
         )
+        # @AkagawaTsurunaki
+        # `agent_action` is type of `dict`
+        # agent_action["buttons"] => Shape of [1, 1]
+        # agent_action["camera"] => Shape of [1, 1]
         minerl_action = self._agent_action_to_env(agent_action)
+        # Here to interpret more actions
+        print(minerl_action["attack"] == 1)
+        import pyautogui as pg
+        if minerl_action["attack"] == 1:
+            pg.mouseDown(button="left", duration=1)
+        else:
+            pg.mouseUp(button="left", duration=1)
+        
         return minerl_action

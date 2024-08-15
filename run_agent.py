@@ -4,6 +4,7 @@ import pickle
 from minerl.herobraine.env_specs.human_survival_specs import HumanSurvival
 
 from agent import MineRLAgent, ENV_KWARGS
+from loguru import logger
 
 def main(model, weights):
     env = HumanSurvival(**ENV_KWARGS).make()
@@ -16,7 +17,12 @@ def main(model, weights):
     agent.load_weights(weights)
 
     print("---Launching MineRL enviroment (be patient)---")
-    obs = env.reset()
+    try:
+        obs = env.reset()
+    except TypeError as e:
+        logger.exception(e)
+        logger.error("MineRL eviroment failed to initialize. Are you sure you set the right version of JDK? (JDK 8)")
+        return
 
     while True:
         minerl_action: dict = agent.get_action(obs)

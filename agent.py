@@ -212,12 +212,8 @@ class MineRLAgent:
         # agent_action["buttons"] => Shape of [1, 1]
         # agent_action["camera"] => Shape of [1, 1]
         minerl_action = self._agent_action_to_env(agent_action)
-        # Here to interpret more actions
-        print(minerl_action["attack"] == 1)
-        import pyautogui as pg
-        if minerl_action["attack"] == 1:
-            pg.mouseDown(button="left", duration=1)
-        else:
-            pg.mouseUp(button="left", duration=1)
-        
+
+        import controller
+        controller.minerl_action_to_env(minerl_action)
+
         return minerl_action

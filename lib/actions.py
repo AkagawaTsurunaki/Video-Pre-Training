@@ -1,5 +1,4 @@
 import attr
-import minerl.herobraine.hero.mc as mc
 import numpy as np
 
 from lib.minecraft_util import store_args
@@ -129,8 +128,7 @@ class ActionTransformer:
     def undiscretize_camera(self, pq):
         return self.quantizer.undiscretize(pq)
 
-    def item_embed_id_to_name(self, item_id):
-        return mc.MINERL_ITEM_MAP[item_id]
+
 
     def dict_to_numpy(self, acs):
         """

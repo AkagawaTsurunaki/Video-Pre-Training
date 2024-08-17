@@ -4,3 +4,4 @@ models/**
 logs
 .vscode
 tmp
+*.png

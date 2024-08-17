@@ -6,6 +6,13 @@ from minerl.herobraine.env_specs.human_survival_specs import HumanSurvival
 from agent import MineRLAgent, ENV_KWARGS
 from loguru import logger
 
+import controller
+from killer import listen_exit_key
+from pynput.keyboard import Key
+
+import screenshot
+
+@listen_exit_key(Key.esc)
 def main(model, weights):
     env = HumanSurvival(**ENV_KWARGS).make()
     print("---Loading model---")
@@ -17,18 +24,18 @@ def main(model, weights):
     agent.load_weights(weights)
 
     print("---Launching MineRL enviroment (be patient)---")
-    # try:
-    #     obs = env.reset()
-    # except TypeError as e:
-    #     logger.exception(e)
-    #     logger.error("MineRL eviroment failed to initialize. Are you sure you set the right version of JDK? (JDK 8)")
-    #     return
 
     while True:
-        minerl_action: dict = agent.get_action(None)
-        # minerl_action: dict = agent.get_action(obs)
-        # obs, reward, done, info = env.step(minerl_action)
-        # env.render()
+        # @AkagawaTsurunaki
+        # This is the screenshot from observation
+        # The tensor must have shape [1, 128, 128, 3]
+        # assert agent_input['img'].shape == th.Size([1, 128, 128, 3])
+        agent_input = {
+            "img": screenshot.capture().to("cuda")
+        }
+        minerl_action: dict = agent.get_action(agent_input)
+        controller.minerl_action_to_env(minerl_action)
+
 
 
 if __name__ == "__main__":

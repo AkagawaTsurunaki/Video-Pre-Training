@@ -9,7 +9,6 @@ from lib.actions import ActionTransformer
 from lib.policy import MinecraftAgentPolicy
 from lib.torch_util import default_device_type, set_default_torch_device
 
-import screenshot
 
 # Hardcoded settings
 AGENT_RESOLUTION = (128, 128)
@@ -188,23 +187,14 @@ class MineRLAgent:
             action = {k: th.from_numpy(v).to(self.device) for k, v in action.items()}
         return action
 
-    def get_action(self, minerl_obs):
+    def get_action(self, agent_input: dict):
         """
         Get agent's action for given MineRL observation.
 
         Agent's hidden state is tracked internally. To reset it,
         call `reset()`.
         """
-        # agent_input = self._env_obs_to_agent(minerl_obs)
-        agent_input = {
-            "img": screenshot.capture().to("cuda")
-        }
-        
-        # @AkagawaTsurunaki
-        # This is the screenshot from observation
-        # The tensor must have shape [1, 128, 128, 3]
-        # assert agent_input['img'].shape == th.Size([1, 128, 128, 3])
-        
+
         # The "first" argument could be used to reset tell episode
         # boundaries, but we are only using this for predicting (for now),
         # so we do not hassle with it yet.
@@ -217,8 +207,5 @@ class MineRLAgent:
         # agent_action["buttons"] => Shape of [1, 1]
         # agent_action["camera"] => Shape of [1, 1]
         minerl_action = self._agent_action_to_env(agent_action)
-
-        import controller
-        controller.minerl_action_to_env(minerl_action)
 
         return minerl_action

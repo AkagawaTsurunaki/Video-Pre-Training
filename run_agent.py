@@ -17,17 +17,18 @@ def main(model, weights):
     agent.load_weights(weights)
 
     print("---Launching MineRL enviroment (be patient)---")
-    try:
-        obs = env.reset()
-    except TypeError as e:
-        logger.exception(e)
-        logger.error("MineRL eviroment failed to initialize. Are you sure you set the right version of JDK? (JDK 8)")
-        return
+    # try:
+    #     obs = env.reset()
+    # except TypeError as e:
+    #     logger.exception(e)
+    #     logger.error("MineRL eviroment failed to initialize. Are you sure you set the right version of JDK? (JDK 8)")
+    #     return
 
     while True:
-        minerl_action: dict = agent.get_action(obs)
-        obs, reward, done, info = env.step(minerl_action)
-        env.render()
+        minerl_action: dict = agent.get_action(None)
+        # minerl_action: dict = agent.get_action(obs)
+        # obs, reward, done, info = env.step(minerl_action)
+        # env.render()
 
 
 if __name__ == "__main__":

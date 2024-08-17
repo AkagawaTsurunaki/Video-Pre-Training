@@ -9,6 +9,7 @@ from lib.actions import ActionTransformer
 from lib.policy import MinecraftAgentPolicy
 from lib.torch_util import default_device_type, set_default_torch_device
 
+import screenshot
 
 # Hardcoded settings
 AGENT_RESOLUTION = (128, 128)
@@ -194,7 +195,11 @@ class MineRLAgent:
         Agent's hidden state is tracked internally. To reset it,
         call `reset()`.
         """
-        agent_input = self._env_obs_to_agent(minerl_obs)
+        # agent_input = self._env_obs_to_agent(minerl_obs)
+        agent_input = {
+            "img": screenshot.capture().to("cuda")
+        }
+        
         # @AkagawaTsurunaki
         # This is the screenshot from observation
         # The tensor must have shape [1, 128, 128, 3]

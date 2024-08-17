@@ -1,10 +1,10 @@
 import functools
+import threading
 import time
+
+from loguru import logger
 from pynput import keyboard
 from pynput.keyboard import Key, KeyCode
-from loguru import logger
-import multiprocessing as mp
-import threading
 
 
 class KeyBoardInterruptListener:
@@ -32,7 +32,8 @@ class KeyBoardInterruptListener:
                 if self.times >= self.max_pressed:
                     self.exit_flag = True
                 logger.warning(
-                    f"Press {self.exit_key} for {self.max_pressed} times within {self.max_interval} second will terminate the process and exit the program.")
+                    f"Press {self.exit_key} for {self.max_pressed} times " +
+                    f"within {self.max_interval} second will terminate the thread.")
                 self.on_press_event.set()
 
 
@@ -44,14 +45,21 @@ def listen_exit_key(exit_key: Key | KeyCode, max_pressed: int = 3, max_interval:
                                                                     max_interval=max_interval)
             keyboard_listener = keyboard.Listener(on_press=keyboard_interrupt_listener.on_press)
             with keyboard_listener:
-                process = mp.Process(target=func, args=args, kwargs=kwargs)
-                process.start()
+                keyboard_interrupt_event = threading.Event()
+                keyboard_interrupt_event.clear()
+                thread = threading.Thread(target=func, args=args,
+                                          kwargs={**kwargs, "keyboard_interrupt_event": keyboard_interrupt_event})
+                thread.start()
+                # process = mp.Process(target=func, args=args, kwargs=kwargs)
+                # process.start()
                 while True:
                     keyboard_interrupt_listener.on_press_event.wait()
                     keyboard_interrupt_listener.on_press_event.clear()
                     if keyboard_interrupt_listener.exit_flag:
-                        process.kill()
-                        raise KeyboardInterrupt()
+                        # process.kill()
+                        keyboard_interrupt_event.set()
+                        logger.warning("Terminating the thread...")
+                        break
 
         return wrapper
 

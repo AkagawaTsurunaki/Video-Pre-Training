@@ -1,4 +1,5 @@
 import pickle
+import threading
 from argparse import ArgumentParser
 
 from pynput.keyboard import Key
@@ -7,10 +8,11 @@ import controller
 from agent import MineRLAgent
 from killer import listen_exit_key
 from lib.screenshot import screenshot
+from loguru import logger
 
 
 @listen_exit_key(Key.esc)
-def main(model, weights):
+def main(model, weights, keyboard_interrupt_event: threading.Event = None):
     print("---Loading model---")
     agent_parameters = pickle.load(open(model, "rb"))
     policy_kwargs = agent_parameters["model"]["args"]["net"]["args"]
@@ -22,6 +24,8 @@ def main(model, weights):
     print("---Launching MineRL enviroment (be patient)---")
 
     while True:
+        if keyboard_interrupt_event.is_set():
+            raise KeyboardInterrupt()
         # @AkagawaTsurunaki
         # This is the screenshot from observation
         # The tensor must have shape [1, 128, 128, 3]
@@ -30,6 +34,7 @@ def main(model, weights):
             "img": screenshot.capture().to("cuda")
         }
         minerl_action: dict = agent.get_action(agent_input)
+        logger.info(minerl_action)
         controller.minerl_action_to_env(minerl_action)
 
 

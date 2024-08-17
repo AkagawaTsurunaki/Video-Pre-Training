@@ -4,13 +4,13 @@ import pickle
 from minerl.herobraine.env_specs.human_survival_specs import HumanSurvival
 
 from agent import MineRLAgent, ENV_KWARGS
-from loguru import logger
 
 import controller
 from killer import listen_exit_key
 from pynput.keyboard import Key
 
-import screenshot
+from lib.screenshot import screenshot
+
 
 @listen_exit_key(Key.esc)
 def main(model, weights):

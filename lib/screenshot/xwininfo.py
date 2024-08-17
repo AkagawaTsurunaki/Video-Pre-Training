@@ -5,9 +5,10 @@ import subprocess, sys
 
 def _run_xwininfo_cmd(name: str) -> str:
     command = f'xwininfo -name "{name}"'
-    result = subprocess.check_output(command, shell = True, executable="/bin/bash")
+    result = subprocess.check_output(command, shell=True, executable="/bin/bash")
     result = result.decode('utf-8')
     return result
+
 
 # Regular expressions to extract the desired fields
 _patterns = {
@@ -33,6 +34,7 @@ _patterns = {
     'geometry': r'-geometry\s+(\d+x\d+\+\d+\+\d+)'
 }
 
+
 @dataclass
 class XWinInfo:
     window_id: int
@@ -40,6 +42,7 @@ class XWinInfo:
     absolute_upper_left_y: int
     width: int
     height: int
+
 
 def _parse_cmd_result(input_string: str) -> any:
     # Dictionary to hold extracted values
@@ -50,7 +53,7 @@ def _parse_cmd_result(input_string: str) -> any:
         match = re.search(pattern, input_string)
         if match:
             extracted_info[key] = match.group(1)
-    
+
     # WinInfoClass = type('WinInfo', (object,), extracted_info)
     # wininfo = WinInfoClass()
     wininfo = XWinInfo(
@@ -61,6 +64,7 @@ def _parse_cmd_result(input_string: str) -> any:
         height=int(extracted_info["height"])
     )
     return wininfo
+
 
 def xwininfo(name: str) -> any:
     cmd_res = _run_xwininfo_cmd(name=name)

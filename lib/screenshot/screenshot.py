@@ -7,7 +7,7 @@ import torch as th
 system = platform.system()
 
 
-def capture(name="Minecraft 1.21.1 - 单人游戏", size=(128, 128)) -> th.Tensor:
+def capture(name="Minecraft", size=(128, 128)) -> th.Tensor:
     if system == "Linux":
         from lib.screenshot.xwininfo import xwininfo
         from lib.screenshot.wmctrl import activate_window

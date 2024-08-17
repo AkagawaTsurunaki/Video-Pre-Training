@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 import re
 import subprocess, sys
+
 
 def _run_xwininfo_cmd(name: str) -> str:
     command = f'xwininfo -name "{name}"'
@@ -31,6 +33,14 @@ _patterns = {
     'geometry': r'-geometry\s+(\d+x\d+\+\d+\+\d+)'
 }
 
+@dataclass
+class XWinInfo:
+    window_id: int
+    absolute_upper_left_x: int
+    absolute_upper_left_y: int
+    width: int
+    height: int
+
 def _parse_cmd_result(input_string: str) -> any:
     # Dictionary to hold extracted values
     extracted_info = {}
@@ -41,8 +51,15 @@ def _parse_cmd_result(input_string: str) -> any:
         if match:
             extracted_info[key] = match.group(1)
     
-    WinInfoClass = type('WinInfo', (object,), extracted_info)
-    wininfo = WinInfoClass()
+    # WinInfoClass = type('WinInfo', (object,), extracted_info)
+    # wininfo = WinInfoClass()
+    wininfo = XWinInfo(
+        window_id=int(extracted_info["window_id"], 16),
+        absolute_upper_left_x=int(extracted_info["absolute_upper_left_x"]),
+        absolute_upper_left_y=int(extracted_info["absolute_upper_left_y"]),
+        width=int(extracted_info["width"]),
+        height=int(extracted_info["height"])
+    )
     return wininfo
 
 def xwininfo(name: str) -> any:

@@ -6,6 +6,7 @@ from loguru import logger
 import multiprocessing as mp
 import threading
 
+
 class KeyBoardInterruptListener:
 
     def __init__(self, exit_key: Key | KeyCode, max_pressed: int = 3, max_interval: float = 1.) -> None:
@@ -16,7 +17,6 @@ class KeyBoardInterruptListener:
         self.last_pressed_time = None
         self.max_pressed = max_pressed
         self.max_interval = max_interval
-
 
     def on_press(self, key: Key | KeyCode):
         if isinstance(key, Key):
@@ -31,15 +31,17 @@ class KeyBoardInterruptListener:
                     self.last_pressed_time = now
                 if self.times >= self.max_pressed:
                     self.exit_flag = True
-                logger.warning(f"Press {self.exit_key} for {self.max_pressed} times within {self.max_interval} second will terminate the process and exit the program.")
-                self.on_press_event.set()   
+                logger.warning(
+                    f"Press {self.exit_key} for {self.max_pressed} times within {self.max_interval} second will terminate the process and exit the program.")
+                self.on_press_event.set()
 
 
 def listen_exit_key(exit_key: Key | KeyCode, max_pressed: int = 3, max_interval: float = 1.):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            keyboard_interrupt_listener = KeyBoardInterruptListener(exit_key=exit_key, max_pressed=max_pressed, max_interval=max_interval)
+            keyboard_interrupt_listener = KeyBoardInterruptListener(exit_key=exit_key, max_pressed=max_pressed,
+                                                                    max_interval=max_interval)
             keyboard_listener = keyboard.Listener(on_press=keyboard_interrupt_listener.on_press)
             with keyboard_listener:
                 process = mp.Process(target=func, args=args, kwargs=kwargs)
@@ -50,5 +52,7 @@ def listen_exit_key(exit_key: Key | KeyCode, max_pressed: int = 3, max_interval:
                     if keyboard_interrupt_listener.exit_flag:
                         process.kill()
                         raise KeyboardInterrupt()
+
         return wrapper
+
     return decorator
